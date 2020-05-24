@@ -1,23 +1,23 @@
-import discord
+# import discord
+from discord.ext import commands
+from testBotCommands.testBot import Testbot
+
 import json
 
-client = discord.Client()
+botName = "TestingBot"
+token = ""
+for t in json.load(open('tokens/token.json'))['tokens']:
+    if botName in t['botName']:
+        token = t['token']
 
+bot = commands.Bot(command_prefix='!')
 
-@client.event
+@bot.event
 async def on_ready():
-    print("logged on as {0}".format(client))
+    print("logged on as {0}".format(bot.user))
 
+    if botName == "TestingBot":
+        bot.add_cog(Testbot(bot))
+        print("Running", botName)
 
-@client.event
-async def on_message(message):
-    print('Message from {0.author}: {0.content}'.format(message))
-
-    if message.author == client.user:
-        return
-
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
-
-
-client.run(json.load(open('token/token.json'))['token'])
+bot.run(token)
