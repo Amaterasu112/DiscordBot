@@ -5,22 +5,19 @@ from generalFunctions import logging
 import os
 import json
 
-adminsJson = {}
-
-if os.path.getsize('data/admins/testBotAdmins.json') > 2:
-    adminJson = json.load(open('data/admins/testBotAdmins.json', 'r'))
-else:
-    adminJson = {'testBotAdmins': []}
-
-
-
 
 class Testbot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.admins = []
+        self.adminJson = {}
 
         self.reloadAdmins()
+
+        if os.path.getsize('data/admins/testBotAdmins.json') > 2:
+            self.adminJson = json.load(open('data/admins/testBotAdmins.json', 'r'))
+        else:
+            self.adminJson = {'testBotAdmins': []}
 
     @commands.command(name="ping")
     async def ping(self, ctx):
@@ -45,17 +42,38 @@ class Testbot(commands.Cog):
 
         if ctx.author.id in self.admins:
             if member.id not in self.admins:
-                adminJson['testBotAdmins'].append({
+                self.adminJson['testBotAdmins'].append({
                     'name': member.name,
                     'ID': member.id
                 })
 
-                json.dump(adminJson, open('data/admins/testBotAdmins.json', 'w'), indent=2)
+                json.dump(self.adminJson, open('data/admins/testBotAdmins.json', 'w'), indent=2)
 
                 await ctx.send("Added {} as an administrator to TestingBot".format(member.name))
             else:
                 await ctx.send("{} already an administrator to TestingBot".format(member.name))
 
+    @commands.command(name="removebotadmin")
+    async def removeBotAdmin(self, ctx, member: discord.Member):
+        logging.log("removebotadmin", ctx)
+
+        self.reloadAdmins()
+
+        if ctx.author.id in self.admins:
+            if member.id in self.admins:
+                for a in self.adminJson['testBotAdmins']:
+                    if a['ID'] == member.id:
+                        self.adminJson['testBotAdmins'].remove(a)
+
+                json.dump(self.adminJson, open('data/admins/testBotAdmins.json', 'w'), indent=2)
+                self.reloadAdmins()
+
+                await ctx.send("Removed {} as an administrator to TestingBot".format(member.name))
+            else:
+                await ctx.send("{} is not an administrator to TestingBot".format(member.name))
+
     def reloadAdmins(self):
-        for a in adminJson['testBotAdmins']:
+        self.adminJson = json.load(open('data/admins/testBotAdmins.json', 'r'))
+
+        for a in self.adminJson['testBotAdmins']:
             self.admins.append(a['ID'])
