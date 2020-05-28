@@ -1,0 +1,13 @@
+{
+  "misfortunes": [
+    {
+      "misfortune": "You will be hit by a car today."
+    },
+    {
+      "misfortune": "You will be hit by a car not today, but tomorrow."
+    },
+    {
+      "misfortune": "You will step in a puddle and your sock will be wet all day."
+    }
+  ]
+}
