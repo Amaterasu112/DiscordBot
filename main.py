@@ -1,11 +1,15 @@
 # import discord
 from discord.ext import commands
 from testBotCommands.testBot import Testbot
+from shitpostingCommands.shitpostBot import Shitpostingbot
 
 import json
 
 botName = "TestingBot"
 token = ""
+
+
+
 for t in json.load(open('tokens/token.json'))['tokens']:
     if botName in t['botName']:
         token = t['token']
@@ -18,6 +22,8 @@ async def on_ready():
 
     if botName == "TestingBot":
         bot.add_cog(Testbot(bot))
+        bot.add_cog((Shitpostingbot(bot)))
         print("Running", botName)
+
 
 bot.run(token)
