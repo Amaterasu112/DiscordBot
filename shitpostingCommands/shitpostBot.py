@@ -15,8 +15,12 @@ class Shitpostingbot(commands.Cog):
     async def misfortunes(self, ctx):
         Logging.commandLog("misfortunes", ctx)
 
-        misfortune = self.misfortunes['misfortunes'][np.random.random_integers(0, len(self.misfortunes['misfortunes']))][
+        # np.random.random_integers(0, len(self.misfortunes['misfortunes']))
+
+        misfortune = self.misfortunes['misfortunes'][np.random.random_integers(0, len(self.misfortunes['misfortunes']) - 1)][
             'misfortune']
+
+        print(misfortune)
 
         await ctx.send(misfortune)
 
