@@ -3,31 +3,18 @@ from discord.ext import commands
 from generalFunctions import Logging
 from generalFunctions.CheckUserInput import checkUserInput
 from generalFunctions.CheckAdmin import checkAdmin
-import numpy as np
-
-import os
-import json
-
+from testBotCommands.botAdminCommands.removeBotAdmin import removeBotAdmin
+from testBotCommands.botAdminCommands.addBotAdmin import addBotAdmin
 
 class Testbot(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.admins = []
-        self.adminJson = {}
-
-        self.reloadAdmins()
-
-        if os.path.getsize('data/admins/testBotAdmins.json') > 2:
-            self.adminJson = json.load(open('data/admins/testBotAdmins.json', 'r'))
-        else:
-            self.adminJson = {'testBotAdmins': []}
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
             Logging.errorLog(error, ctx)
             await ctx.send('I could not find that user')
-
 
     @commands.command(name="ping")
     async def ping(self, ctx):
@@ -48,39 +35,15 @@ class Testbot(commands.Cog):
     async def addBotAdmin(self, ctx, user: discord.Member):
         Logging.commandLog("addbotadmin", ctx)
 
-        self.reloadAdmins()
-
         if checkAdmin(ctx):
-            if user.id not in self.admins:
-                self.adminJson['testBotAdmins'].append({
-                    'name': user.name,
-                    'ID': user.id
-                })
-
-                json.dump(self.adminJson, open('data/admins/testBotAdmins.json', 'w'), indent=2)
-
-                await ctx.send("Added {} as an administrator to TestingBot".format(user.name))
-            else:
-                await ctx.send("{} already an administrator to TestingBot".format(user.name))
+            await addBotAdmin(ctx, user)
 
     @commands.command(name="removebotadmin")
     async def removeBotAdmin(self, ctx, user: discord.Member):
         Logging.commandLog("removebotadmin", ctx)
 
-        self.reloadAdmins()
-
         if checkAdmin(ctx):
-            if user.id in self.admins:
-                for a in self.adminJson['testBotAdmins']:
-                    if a['ID'] == user.id:
-                        self.adminJson['testBotAdmins'].remove(a)
-
-                json.dump(self.adminJson, open('data/admins/testBotAdmins.json', 'w'), indent=2)
-                self.reloadAdmins()
-
-                await ctx.send("Removed {} as an administrator to TestingBot".format(user.name))
-            else:
-                await ctx.send("{} is not an administrator to TestingBot".format(user.name))
+            await removeBotAdmin(user)
 
     @commands.command(name="sendcookies")
     async def sendCookies(self, ctx, user: discord.Member = None):
@@ -114,9 +77,3 @@ class Testbot(commands.Cog):
                 for message in messages:
                     await message.delete()
                 await ctx.send("Deleted all found Dms")
-
-    def reloadAdmins(self):
-        self.adminJson = json.load(open('data/admins/testBotAdmins.json', 'r'))
-
-        for a in self.adminJson['testBotAdmins']:
-            self.admins.append(a['ID'])

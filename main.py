@@ -2,6 +2,7 @@
 from discord.ext import commands
 from testBotCommands.testBot import Testbot
 from shitpostingCommands.shitpostBot import Shitpostingbot
+from quizCommands.quizBot import QuizBot
 
 import json
 
@@ -23,6 +24,7 @@ async def on_ready():
     if botName == "TestingBot":
         bot.add_cog(Testbot(bot))
         bot.add_cog((Shitpostingbot(bot)))
+        bot.add_cog((QuizBot(bot)))
         print("Running", botName)
 
 
